@@ -3,11 +3,24 @@ const Admin = require('../models/admin_schema')
 const router = new express.Router()
 
 router.post('/admin/signup', async (req,res)=>{
-    console.log(req.body)
     const admin = new Admin(req.body)
     try {
         await admin.save()
+        const token = admin.generateAuthtoken()
         res.status(201).send(admin)
+    } catch (error) {
+        res.status(400).send(error)
+    }
+})
+
+router.get('/admin/login', async(req,res)=>{ 
+    try {
+        const admin = await Admin.findByCredentials(req.body.email, req.body.password)
+        const token = admin.generateAuthtoken()
+        if(!admin){
+            res.status(404).send('email or password are not matching from  the database')
+        }
+        res.status(200).send(admin)
     } catch (error) {
         res.status(400).send(error)
     }
