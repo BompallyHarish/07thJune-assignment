@@ -1,9 +1,10 @@
 const express = require('express')
 const Store = require('../models/store_schema')
 const auth = require('../middlewares/admin_auth')
+const authRole = require('../middlewares/admin_auth')
 const router = new express.Router()
 
-router.post('/store/entry', auth, async (req,res)=>{
+router.post('/store/entry', auth, authRole, async (req,res)=>{
     const store = new Store({
         ...req.body,
         owner : req.admin._id
@@ -36,28 +37,14 @@ router.get('/store/read', auth, async(req,res)=>{
         res.status(404).send(error)
     }
 })
-// products update is pending
-router.patch('/store/update', auth, async(req,res)=>{
-    const store = req.body
-    const name = req.body.name
 
-    try {
-        const store1 = await Store.updateOne({name},{$set:{ available_quantity:req.body.available_quantity}}, {new: true, runValidators: true })
-        console.log(req.body.available_quantity)
-        console.log(store1)
-        const store2 = await Store.find({'products.name':req.body.products.name})
-        res.status(200).send(store2)
-    } catch (error) {
-        res.status(400).send(error)
-    }
-})
-
-
-router.patch('/store/insertproduct/:name',auth, async(req,res)=>{
+// updating product details  by using Id
+router.patch('/store/:id',auth, async(req,res)=>{
+    const _id= req.params.id
     const store =req.body
     try {
-        const store1 = await Store.updateOne({name},{$push: req.body})
-        const store2 = await Store.find({name})
+        const store1 = await Store.updateOne({_id},req.body,{new: true, runValidators: true })
+        const store2 = await Store.find({_id})
         res.status(200).send(store2)
     } catch (error) {
         res.status(400).send(error)
@@ -65,10 +52,10 @@ router.patch('/store/insertproduct/:name',auth, async(req,res)=>{
 })
 
 //delete By Id
-router.delete('/store/delete/:id', auth, async(req,res)=>{
+router.delete('/store/delete/:id', auth, authRole, async(req,res)=>{
     const _id = req.params.id
     try {
-        const Location1 = await Store.deleteOne({_id, name: req.admin.name})
+        const Location1 = await Store.deleteOne({_id})
         if(!Location1){
             return res.status(404).send('Location is not found')
             }
@@ -79,13 +66,14 @@ router.delete('/store/delete/:id', auth, async(req,res)=>{
 })
 
 //delete by All
-router.delete('/store/delete', auth, async(req,res)=>{
+router.delete('/store/delete', auth, authRole, async(req,res)=>{
+
     try {
-        const Location1 = await Store.deleteMany({name: req.admin.name})
-        if(!Location1){
-            return res.status(404).send('Location is not found')
+        const product1 = await Store.deleteMany({})
+        if(!product1){
+            return res.status(404).send('product  not found')
             }
-        res.status(200).send(Location1)
+        res.status(200).send(product1)
     } catch (error) {
         res.status(400).send(error)
     }

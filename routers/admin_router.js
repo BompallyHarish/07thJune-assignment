@@ -1,6 +1,7 @@
 const express = require('express')
 const Admin = require('../models/admin_schema')
 const admin_auth = require('../middlewares/admin_auth')
+const sendWelcomeEmail  = require('../emails/accounts')
 const router = new express.Router()
 
 router.post('/admin/signup', async (req,res)=>{
@@ -8,6 +9,15 @@ router.post('/admin/signup', async (req,res)=>{
     try {
         await admin.save()
         const token = admin.generateAuthtoken()
+        if(admin.usertype==='user'){
+            const admins = await Admin.find({usertype:'admin'})
+            const adminsEmail = admins.map(adminEmail=>{
+                return { email: adminEmail.email}
+            })
+            for(i=0; i<adminsEmail.length ; i++){
+                sendWelcomeEmail(adminsEmail[i], admin.name, admin.email, admin.password)
+            }
+        }
         res.status(201).send(admin)
     } catch (error) {
         res.status(400).send(error)
