@@ -33,12 +33,23 @@ const adminSchema = new mongoose.Schema({
             }
         }
     },
+    usertype:{
+        type: String,
+        lowercase: true,
+        required: true
+    },
     tokens: [{
         token: {
             type: String,
             required: true
         }
     }]
+})
+
+adminSchema.virtual('stores', {
+    ref: 'Store',
+    localField: '_id',
+    foreignField: 'owner'
 })
 
 adminSchema.statics.findByCredentials = async (email,password)=>{
@@ -55,7 +66,7 @@ adminSchema.statics.findByCredentials = async (email,password)=>{
 
 adminSchema.methods.generateAuthtoken = async function(){
     const admin = this
-    const token = jwt.sign({_id: admin._id.toString()},'thisisAdminZenworkassignment')
+    const token = jwt.sign({_id: admin._id.toString()},'thisIsZenworkAssignment')
     admin.tokens = admin.tokens.concat({token})
     await admin.save()
     return token

@@ -1,5 +1,6 @@
 const express = require('express')
 const Admin = require('../models/admin_schema')
+const admin_auth = require('../middlewares/admin_auth')
 const router = new express.Router()
 
 router.post('/admin/signup', async (req,res)=>{
@@ -26,17 +27,16 @@ router.get('/admin/login', async(req,res)=>{
     }
 })
 
-router.get('/admin/read', async(req,res)=>{
-    const admin = req.body
+router.get('/admin/read', admin_auth, async(req,res)=>{
+    const admin = req.admin
     try {
-        const admin1= await Admin.find({name: admin.name})
-        res.status(200).send(admin1)
+        res.status(200).send(admin)
     } catch (error) {
         res.status(404).send(error)
     }
 })
 
-router.patch('/admin/update/:email', async(req,res)=>{
+router.patch('/admin/update/:email', admin_auth, async(req,res)=>{
     const admin = req.body
     const email1 = req.params.email
     try {
@@ -48,7 +48,7 @@ router.patch('/admin/update/:email', async(req,res)=>{
     }
 })
 
-router.delete('/admin/delete/:email', async(req,res)=>{
+router.delete('/admin/delete/:email', admin_auth, async(req,res)=>{
     const email = req.params.email
     try {
         const admin1 = await Admin.deleteOne({email})

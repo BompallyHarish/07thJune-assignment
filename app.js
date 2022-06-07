@@ -9,7 +9,7 @@ const app = express()
 app.use(express.json())
 app.use(subUserRouter)
 app.use(adminRouter)
-app.use(productRouter)
+//app.use(productRouter)
 app.use(storeRouter)
 
 app.listen(8000,()=>{
