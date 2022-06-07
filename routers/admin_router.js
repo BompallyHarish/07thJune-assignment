@@ -1,6 +1,6 @@
 const express = require('express')
 const Admin = require('../models/admin_schema')
-const admin_auth = require('../middlewares/admin_auth')
+const {auth, authRole} = require('../middlewares/admin_auth')
 const sendWelcomeEmail  = require('../emails/accounts')
 const router = new express.Router()
 
@@ -37,7 +37,7 @@ router.get('/admin/login', async(req,res)=>{
     }
 })
 
-router.get('/admin/read', admin_auth, async(req,res)=>{
+router.get('/admin/read', auth, async(req,res)=>{
     const admin = req.admin
     try {
         res.status(200).send(admin)
@@ -46,19 +46,20 @@ router.get('/admin/read', admin_auth, async(req,res)=>{
     }
 })
 
-router.patch('/admin/update/:email', admin_auth, async(req,res)=>{
-    const admin = req.body
-    const email1 = req.params.email
+router.patch('/admin/update', auth, async(req,res)=>{
+
+    const email = req.admin.email
+    console.log(email)
     try {
-        const admin1 = await Admin.updateOne({email: email1 },req.body, {new: true, runValidators: true })
-        const admin2 = await Admin.find({email:email1})
+        const admin1 = await Admin.updateOne({email},req.body, {new: true, runValidators: true })
+        const admin2 = await Admin.find({email})
         res.status(200).send(admin2)
     } catch (error) {
         res.status(400).send(error)
     }
 })
 
-router.delete('/admin/delete/:email', admin_auth, async(req,res)=>{
+router.delete('/admin/delete/:email', auth, authRole, async(req,res)=>{
     const email = req.params.email
     try {
         const admin1 = await Admin.deleteOne({email})
