@@ -1,6 +1,6 @@
 const express = require('express')
 const Admin = require('../models/admin_schema')
-const  authRole = require('../middlewares/admin_auth')
+const authRole = require('../middlewares/admin_auth')
 const auth = require('../middlewares/login_auth')
 const sendWelcomeEmail  = require('../emails/accounts')
 const router = new express.Router()
