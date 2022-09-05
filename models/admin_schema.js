@@ -33,7 +33,7 @@ const adminSchema = new mongoose.Schema({
             }
         }
     },
-    usertype:{
+    usertype: {
         type: String,
         lowercase: true,
         required: true
@@ -52,22 +52,22 @@ adminSchema.virtual('stores', {
     foreignField: 'owner'
 })
 
-adminSchema.statics.findByCredentials = async (email,password)=>{
-    const admin = await Admin.findOne({email})
-    if(!admin){
+adminSchema.statics.findByCredentials = async (email, password) => {
+    const admin = await Admin.findOne({ email })
+    if (!admin) {
         throw new Error('email is not existing in the database')
     }
     const isMatch = await bcrypt.compare(password, admin.password)
-    if(!isMatch){
+    if (!isMatch) {
         throw new Error('password is not matching')
     }
     return admin
 }
 
-adminSchema.methods.generateAuthtoken = async function(){
+adminSchema.methods.generateAuthtoken = async function () {
     const admin = this
-    const token = jwt.sign({_id: admin._id.toString()},'thisIsZenworkAssignment')
-    admin.tokens = admin.tokens.concat({token})
+    const token = jwt.sign({ _id: admin._id.toString() }, 'thisIsZenworkAssignment')
+    admin.tokens = admin.tokens.concat({ token })
     await admin.save()
     return token
 }

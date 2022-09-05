@@ -4,10 +4,10 @@ const authRole = require('../middlewares/admin_auth')
 const auth = require('../middlewares/login_auth')
 const router = new express.Router()
 
-router.post('/store/entry', auth, authRole, async (req,res)=>{
+router.post('/store/entry', auth, authRole, async (req, res) => {
     const store = new Store({
         ...req.body,
-        owner : req.admin._id
+        owner: req.admin._id
     })
     try {
         await store.save()
@@ -18,10 +18,10 @@ router.post('/store/entry', auth, authRole, async (req,res)=>{
 })
 
 //read by Id
-router.get('/store/read/:id', auth, async(req,res)=>{
+router.get('/store/read/:id', auth, async (req, res) => {
     const _id = req.params.id
     try {
-        const store1 = await Store.find({_id, name: req.admin.name})
+        const store1 = await Store.find({ _id, name: req.admin.name })
         res.status(200).send(store1)
     } catch (error) {
         res.status(404).send(error)
@@ -29,9 +29,9 @@ router.get('/store/read/:id', auth, async(req,res)=>{
 })
 
 // read All
-router.get('/store/read', auth, async(req,res)=>{
+router.get('/store/read', auth, async (req, res) => {
     try {
-        const store1 = await Store.find({ name: req.admin.name})
+        const store1 = await Store.find({ name: req.admin.name })
         res.status(200).send(store1)
     } catch (error) {
         res.status(404).send(error)
@@ -39,12 +39,12 @@ router.get('/store/read', auth, async(req,res)=>{
 })
 
 // updating product details  by using Id
-router.patch('/store/:id',auth, async(req,res)=>{
-    const _id= req.params.id
-    const store =req.body
+router.patch('/store/:id', auth, async (req, res) => {
+    const _id = req.params.id
+    const store = req.body
     try {
-        const store1 = await Store.updateOne({_id},req.body,{new: true, runValidators: true })
-        const store2 = await Store.find({_id})
+        const store1 = await Store.updateOne({ _id }, req.body, { new: true, runValidators: true })
+        const store2 = await Store.find({ _id })
         res.status(200).send(store2)
     } catch (error) {
         res.status(400).send(error)
@@ -52,12 +52,12 @@ router.patch('/store/:id',auth, async(req,res)=>{
 })
 
 // adding extra product to the existing array of products
-router.patch('/store/insert/:id',authRole, async(req,res)=>{
-    const _id= req.params.id
-    const store =req.body
+router.patch('/store/insert/:id', authRole, async (req, res) => {
+    const _id = req.params.id
+    const store = req.body
     try {
-        const store1 = await Store.updateOne({_id},{$push:{products:[req.body]}},{new: true, runValidators: true })
-        const store2 = await Store.find({_id})
+        const store1 = await Store.updateOne({ _id }, { $push: { products: [req.body] } }, { new: true, runValidators: true })
+        const store2 = await Store.find({ _id })
         res.status(200).send(store2)
     } catch (error) {
         res.status(400).send(error)
@@ -65,11 +65,11 @@ router.patch('/store/insert/:id',authRole, async(req,res)=>{
 })
 
 //updating a particular prodcut fron an existing array of products
-router.patch('/store/update/:id',auth, async(req,res)=>{
-    const _id= req.params.id
-    const name =req.body.name
+router.patch('/store/update/:id', auth, async (req, res) => {
+    const _id = req.params.id
+    const name = req.body.name
     try {
-        const store1 = await Store.updateOne({_id, "products.name":name},{$set:{"products.$":req.body}},{new: true, runValidators: true })
+        const store1 = await Store.updateOne({ _id, "products.name": name }, { $set: { "products.$": req.body } }, { new: true, runValidators: true })
         // const store2 = await Store.find({_id})
         res.status(200).send(store1)
     } catch (error) {
@@ -79,14 +79,14 @@ router.patch('/store/update/:id',auth, async(req,res)=>{
 
 //deleting a particular prodcut fron an existing array of products
 
-router.patch('/store/delete/:id', auth, authRole, async(req,res)=>{
+router.patch('/store/delete/:id', auth, authRole, async (req, res) => {
     const _id = req.params.id
-    const name =req.body.name
+    const name = req.body.name
     try {
-        const Location1 = await Store.updateMany({_id,"products.name":name},{$pull:{"products":{name:name}}})
-        if(!Location1){
+        const Location1 = await Store.updateMany({ _id, "products.name": name }, { $pull: { "products": { name: name } } })
+        if (!Location1) {
             return res.status(404).send('product  not found')
-            }
+        }
         res.status(200).send(Location1)
     } catch (error) {
         res.status(400).send(error)
@@ -95,13 +95,13 @@ router.patch('/store/delete/:id', auth, authRole, async(req,res)=>{
 
 
 //delete By Id
-router.delete('/store/delete/:id', auth, authRole, async(req,res)=>{
+router.delete('/store/delete/:id', auth, authRole, async (req, res) => {
     const _id = req.params.id
     try {
-        const Location1 = await Store.deleteOne({_id})
-        if(!Location1){
+        const Location1 = await Store.deleteOne({ _id })
+        if (!Location1) {
             return res.status(404).send('product  not found')
-            }
+        }
         res.status(200).send(Location1)
     } catch (error) {
         res.status(400).send(error)
@@ -109,13 +109,13 @@ router.delete('/store/delete/:id', auth, authRole, async(req,res)=>{
 })
 
 //delete by All
-router.delete('/store/delete', auth, authRole, async(req,res)=>{
+router.delete('/store/delete', auth, authRole, async (req, res) => {
 
     try {
         const product1 = await Store.deleteMany({})
-        if(!product1){
+        if (!product1) {
             return res.status(404).send('products not found')
-            }
+        }
         res.status(200).send(product1)
     } catch (error) {
         res.status(400).send(error)

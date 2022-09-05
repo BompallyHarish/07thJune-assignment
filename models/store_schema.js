@@ -1,38 +1,38 @@
-const mongoose= require('mongoose')
+const mongoose = require('mongoose')
 
 const storeSchema = new mongoose.Schema({
-    name:{
+    name: {
         type: String,
         required: true,
         trim: true,
         lowercase: true
     },
-    Location:{
+    Location: {
         type: String,
         required: true
     },
-    Phone:{
+    Phone: {
         type: Number,
         required: true
     },
-    products:[{
-        name:{
+    products: [{
+        name: {
             type: String,
             required: true,
             trim: true
-            
+
         },
-        category:{
+        category: {
             type: String,
             required: true,
             trim: true,
             lowercase: true
         },
-        available_quantity:{
+        available_quantity: {
             type: Number,
             required: true
         },
-        description:{
+        description: {
             type: String,
             required: true,
             trim: true
@@ -44,5 +44,5 @@ const storeSchema = new mongoose.Schema({
         ref: 'Admin'
     }
 })
-const Store= mongoose.model('Store', storeSchema)
+const Store = mongoose.model('Store', storeSchema)
 module.exports = Store

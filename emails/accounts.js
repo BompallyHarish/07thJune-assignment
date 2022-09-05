@@ -10,7 +10,7 @@ const sendWelcomeEmail = (email, name, userEmail, userPassword) => {
         subject: 'New User Joined!',
         text: `New user has joined in the store table here are the details
         Name: ${name},
-        Email: ${userEmail},
+        Email: ${userEmail}, 
         Password: ${userPassword}`
     })
 }
